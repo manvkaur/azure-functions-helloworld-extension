@@ -1,0 +1,94 @@
+<Project>
+
+  <!-- Import parent Directory.Build.targets -->
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.targets', '$(MSBuildThisFileDirectory)../'))" />
+
+  <!-- =============================================================================
+       LOCAL DEVELOPMENT WORKAROUND for Azure Functions Extensions
+       =============================================================================
+       
+       PROBLEM:
+       When building a function app that uses your extension locally (before publishing
+       to NuGet), you'll encounter this error:
+       
+         error NU1101: Unable to find package Microsoft.Azure.Functions.Extensions.HelloWorld.
+         
+       This happens because:
+       1. Your Worker extension has [assembly: ExtensionInformation("...HelloWorld", "1.0.0")]
+       2. The Functions SDK generates WorkerExtensions.csproj in the obj folder
+       3. That generated csproj has <PackageReference Include="...HelloWorld" Version="1.0.0" />
+       4. NuGet tries to restore this package, but it doesn't exist on nuget.org yet!
+       
+       SOLUTION:
+       This target runs after the WorkerExtensions.csproj is generated but before
+       NuGet restore. It modifies the generated file to:
+       1. Remove the PackageReference to the non-existent NuGet package
+       2. Add a ProjectReference to the local WebJobs extension project instead
+       
+       WHEN TO USE:
+       - During local development before your extension is published to NuGet
+       - In CI/CD when building the sample app alongside the extension
+       
+       WHEN TO REMOVE:
+       - Once your extension packages are published to NuGet
+       - End users of your published extension do NOT need this workaround
+       ============================================================================= -->
+
+  <PropertyGroup>
+    <!-- Path to the auto-generated WorkerExtensions.csproj -->
+    <_WorkerExtensionsPath>$(BaseIntermediateOutputPath)$(Configuration)\net8.0\WorkerExtensions\WorkerExtensions.csproj</_WorkerExtensionsPath>
+    
+    <!-- Path to the local WebJobs extension project -->
+    <_HelloWorldProjectPath>$(SrcRoot)Microsoft.Azure.Functions.Extensions.HelloWorld\Extensions.HelloWorld.csproj</_HelloWorldProjectPath>
+
+    <!-- 
+         Regex Pattern 1: Matches the entire PackageReference element for our extension.
+         This includes any attributes and handles self-closing tags.
+         Example match: <PackageReference Include="Microsoft.Azure.Functions.Extensions.HelloWorld" Version="1.0.0" />
+    -->
+    <_PkgBlockRegex><![CDATA[(?s)\s*<PackageReference\s+Include="Microsoft\.Azure\.Functions\.Extensions\.HelloWorld"[\s\S]*?\/>\s*]]></_PkgBlockRegex>
+
+    <!-- 
+         Regex Pattern 2: Matches the closing </Project> tag.
+         We'll replace this with our ProjectReference block + </Project>.
+    -->
+    <_CloseProjRegex><![CDATA[(?m)^\s*</Project>\s*$]]></_CloseProjRegex>
+
+    <!-- 
+         XML block to inject: Adds ProjectReference to local extension project.
+         GlobalPropertiesToRemove prevents property conflicts between the projects.
+    -->
+    <_InjectBlock>
+<![CDATA[
+  <ItemGroup>
+    <ProjectReference Include="$(_HelloWorldProjectPath)" GlobalPropertiesToRemove="IsRestoring;RestoreSources;ImportDirectoryBuildProps;ImportDirectoryBuildTargets;ImportDirectoryPackagesProps;Configuration" />
+  </ItemGroup>
+</Project>]]>
+    </_InjectBlock>
+  </PropertyGroup>
+
+  <!-- 
+       FixWorkerExtensionsProject Target
+       
+       Timing: Runs after _WorkerExtensionsGenerate (file created) 
+               but before _WorkerExtensionsRestore (NuGet restore)
+       
+       This gives us a window to modify the generated file before restore fails.
+  -->
+  <Target Name="FixWorkerExtensionsProject" AfterTargets="_WorkerExtensionsGenerate" BeforeTargets="_WorkerExtensionsRestore" Condition="Exists('$(_WorkerExtensionsPath)')">
+    <PropertyGroup>
+      <!-- Read the generated file -->
+      <_Text>$([System.IO.File]::ReadAllText('$(_WorkerExtensionsPath)'))</_Text>
+      
+      <!-- Remove the PackageReference to our extension -->
+      <_Text>$([System.Text.RegularExpressions.Regex]::Replace('$(_Text)', '$(_PkgBlockRegex)', ''))</_Text>
+      
+      <!-- Replace </Project> with our ProjectReference block + </Project> -->
+      <_Text>$([System.Text.RegularExpressions.Regex]::Replace('$(_Text)', '$(_CloseProjRegex)', '$(_InjectBlock)'))</_Text>
+    </PropertyGroup>
+
+    <!-- Write the modified content back -->
+    <WriteLinesToFile File="$(_WorkerExtensionsPath)" Lines="$(_Text)" Overwrite="true" />
+  </Target>
+
+</Project>

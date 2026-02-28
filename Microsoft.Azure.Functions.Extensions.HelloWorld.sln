@@ -13,6 +13,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Azure.Functions.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Extensions.HelloWorld.Tests", "test\Microsoft.Azure.Functions.Extensions.HelloWorld.Tests\Extensions.HelloWorld.Tests.csproj", "{92173A55-DC1C-41B6-8AF4-E6D1C51BC18C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Microsoft.Azure.Functions.Worker.Extensions.HelloWorld", "Microsoft.Azure.Functions.Worker.Extensions.HelloWorld", "{3E54DA9A-C4E6-4D61-A176-4531A3078C36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker.Extensions.HelloWorld", "src\Microsoft.Azure.Functions.Worker.Extensions.HelloWorld\Worker.Extensions.HelloWorld.csproj", "{F650A9E1-FBA0-4754-8D87-EF79601976C6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +65,18 @@ Global
 		{92173A55-DC1C-41B6-8AF4-E6D1C51BC18C}.Release|x64.Build.0 = Release|Any CPU
 		{92173A55-DC1C-41B6-8AF4-E6D1C51BC18C}.Release|x86.ActiveCfg = Release|Any CPU
 		{92173A55-DC1C-41B6-8AF4-E6D1C51BC18C}.Release|x86.Build.0 = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|x64.Build.0 = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,5 +84,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{1462ED9D-E5A8-ECF5-3A14-6478A731A756} = {0C88DD14-F956-CE84-757C-A364CCF449FC}
 		{92173A55-DC1C-41B6-8AF4-E6D1C51BC18C} = {1462ED9D-E5A8-ECF5-3A14-6478A731A756}
+		{3E54DA9A-C4E6-4D61-A176-4531A3078C36} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{F650A9E1-FBA0-4754-8D87-EF79601976C6} = {3E54DA9A-C4E6-4D61-A176-4531A3078C36}
 	EndGlobalSection
 EndGlobal

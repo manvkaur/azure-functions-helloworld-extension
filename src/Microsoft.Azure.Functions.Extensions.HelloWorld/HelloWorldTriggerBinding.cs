@@ -69,7 +69,7 @@ internal sealed class HelloWorldTriggerBinding : ITriggerBinding
         // Create binding data that other bindings can use
         var bindingData = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase)
         {
-            { "Name", helloWorldContext.Name },
+            { "GreetingName", helloWorldContext.Name },
             { "Timestamp", helloWorldContext.Timestamp },
             { "InvocationId", helloWorldContext.InvocationId }
         };

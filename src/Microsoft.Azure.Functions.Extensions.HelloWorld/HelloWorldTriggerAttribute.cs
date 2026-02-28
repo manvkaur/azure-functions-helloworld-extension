@@ -26,12 +26,12 @@ public sealed class HelloWorldTriggerAttribute : Attribute
     /// <summary>
     /// Creates a new HelloWorldTriggerAttribute with the specified name.
     /// </summary>
-    /// <param name="name">The name to use in the greeting. Supports app settings with %Name% syntax.</param>
-    /// <exception cref="ArgumentNullException">Thrown when name is null.</exception>
-    public HelloWorldTriggerAttribute(string name)
+    /// <param name="greetingName">The name to use in the greeting. Supports app settings with %Name% syntax.</param>
+    /// <exception cref="ArgumentNullException">Thrown when greetingName is null.</exception>
+    public HelloWorldTriggerAttribute(string greetingName)
     {
-        ArgumentNullException.ThrowIfNull(name);
-        Name = name;
+        ArgumentNullException.ThrowIfNull(greetingName);
+        GreetingName = greetingName;
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ public sealed class HelloWorldTriggerAttribute : Attribute
     /// The [AutoResolve] attribute enables %AppSettingName% syntax for configuration values.
     /// </summary>
     [AutoResolve]
-    public string Name { get; }
+    public string GreetingName { get; }
 
     /// <summary>
     /// Gets or sets an optional custom message prefix.

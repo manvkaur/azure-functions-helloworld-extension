@@ -19,10 +19,10 @@ namespace Microsoft.Azure.Functions.Extensions.HelloWorld;
 /// </summary>
 internal sealed class HelloWorldAsyncCollector : IAsyncCollector<string>
 {
-    private readonly HelloWorldOutputAttribute _attribute;
+    private readonly HelloWorldAttribute _attribute;
     private readonly ILogger _logger;
 
-    public HelloWorldAsyncCollector(HelloWorldOutputAttribute attribute, ILogger logger)
+    public HelloWorldAsyncCollector(HelloWorldAttribute attribute, ILogger logger)
     {
         ArgumentNullException.ThrowIfNull(attribute);
         ArgumentNullException.ThrowIfNull(logger);

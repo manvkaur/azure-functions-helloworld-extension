@@ -49,10 +49,16 @@ internal sealed class HelloWorldListener : IListener
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        _logger.LogInformation("HelloWorld listener starting for name: {Name}", _attribute.Name);
+        _logger.LogInformation("HelloWorld listener starting for name: {GreetingName}", _attribute.GreetingName);
 
-        // For demonstration: trigger the function once after 5 seconds
-        // A real extension would have different logic here
+        // LEARNING NOTE: This 5-second delay is hardcoded for demo simplicity.
+        // In a real extension, you should:
+        // 1. Make timing configurable via the trigger attribute or host.json
+        // 2. Implement actual trigger logic (e.g., poll a service, listen to events)
+        // 3. Consider using IOptionsMonitor<T> for runtime configuration changes
+        //
+        // Example of configurable timing:
+        //   dueTime: TimeSpan.FromSeconds(_attribute.DelaySeconds ?? 5)
         _timer = new Timer(
             callback: OnTimerTick,
             state: null,
@@ -123,7 +129,7 @@ internal sealed class HelloWorldListener : IListener
 
             var context = new HelloWorldContext
             {
-                Name = _attribute.Name,
+                Name = _attribute.GreetingName,
                 MessagePrefix = _attribute.MessagePrefix,
                 Timestamp = DateTimeOffset.UtcNow,
                 InvocationId = Guid.NewGuid().ToString()

@@ -43,17 +43,20 @@ internal sealed class HelloWorldExtensionConfigProvider : IExtensionConfigProvid
 
         _logger.LogInformation("Hello World extension initialized!");
 
-        // Trigger binding
+        // Trigger binding - uses HelloWorldTriggerAttribute
         context.AddBindingRule<HelloWorldTriggerAttribute>()
             .BindToTrigger(new HelloWorldTriggerBindingProvider(_loggerFactory));
 
-        // Input binding
-        context.AddBindingRule<HelloWorldInputAttribute>()
-            .BindToInput<string>(attr => $"{attr.Greeting}, {attr.Name}!");
-
-        // Output binding
+        // Unified binding for input and output - uses HelloWorldAttribute
+        // The Worker SDK strips "Input"/"Output" suffixes, so both HelloWorldInputAttribute
+        // and HelloWorldOutputAttribute map to binding type "helloWorld" which matches HelloWorldAttribute.
         var outputLogger = _loggerFactory.CreateLogger<HelloWorldAsyncCollector>();
-        context.AddBindingRule<HelloWorldOutputAttribute>()
-            .BindToCollector<string>(attr => new HelloWorldAsyncCollector(attr, outputLogger));
+        var bindingRule = context.AddBindingRule<HelloWorldAttribute>();
+        
+        // Input binding - provides a greeting message
+        bindingRule.BindToInput<string>(attr => $"{attr.Greeting}, {attr.GreetingName}!");
+        
+        // Output binding - collects messages
+        bindingRule.BindToCollector<string>(attr => new HelloWorldAsyncCollector(attr, outputLogger));
     }
 }

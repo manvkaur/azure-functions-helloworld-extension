@@ -17,7 +17,7 @@ public class HelloWorldTriggerAttributeTests
         var attribute = new HelloWorldTriggerAttribute("TestUser");
 
         // Assert
-        Assert.Equal("TestUser", attribute.Name);
+        Assert.Equal("TestUser", attribute.GreetingName);
         Assert.Null(attribute.MessagePrefix);
     }
 

@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Microsoft.Azure.Functions.Extensions.HelloWorld;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Extensions.HelloWorld;
 using Microsoft.Extensions.Logging;
 
 namespace SampleFunctionApp;
@@ -12,8 +12,8 @@ namespace SampleFunctionApp;
 /// 
 /// This file shows how to use:
 /// - HelloWorldTrigger: Automatically invokes the function
-/// - HelloWorldInput: Provides input data to the function
-/// - HelloWorldOutput: Collects output from the function
+/// - HelloWorldInput: Provides a greeting message to the function
+/// - HelloWorldOutput: Collects output messages from the function
 /// </summary>
 public class HelloWorldFunction
 {
@@ -25,27 +25,46 @@ public class HelloWorldFunction
     }
 
     /// <summary>
-    /// A function that demonstrates all three binding types:
-    /// - Trigger: HelloWorldTrigger fires this function
-    /// - Input: HelloWorldInput provides a greeting message
-    /// - Output: HelloWorldOutput collects messages via IAsyncCollector
+    /// A function that demonstrates the HelloWorld trigger binding.
+    /// The trigger fires automatically when the extension is initialized.
     /// </summary>
-    [FunctionName("SayHello")]
-    public async Task SayHello(
-        [HelloWorldTrigger("Azure Functions Developer")] HelloWorldContext context,
-        [HelloWorldInput(Greeting = "Welcome", Name = "Developer")] string inputMessage,
-        [HelloWorldOutput(Prefix = "LOG")] IAsyncCollector<string> outputCollector)
+    [Function("SayHello")]
+    public void SayHello(
+        [HelloWorldTrigger("Azure Functions Developer")] HelloWorldContext context)
     {
         _logger.LogInformation("HelloWorld trigger fired!");
         _logger.LogInformation("  Name: {Name}", context.Name);
         _logger.LogInformation("  Timestamp: {Timestamp}", context.Timestamp);
         _logger.LogInformation("  InvocationId: {InvocationId}", context.InvocationId);
+    }
 
-        // Demonstrate input binding - the message comes from HelloWorldInputAttribute
-        _logger.LogInformation("  Input binding message: {InputMessage}", inputMessage);
+    /// <summary>
+    /// A function that demonstrates the HelloWorld input binding.
+    /// The input binding provides a pre-formatted greeting message.
+    /// </summary>
+    [Function("GetGreeting")]
+    public void GetGreeting(
+        [HelloWorldTrigger("Developer")] HelloWorldContext context,
+        [HelloWorldInput(Greeting = "Welcome", GreetingName = "Azure Developer")] string greeting)
+    {
+        _logger.LogInformation("HelloWorld input binding demo!");
+        _logger.LogInformation("  Trigger Name: {Name}", context.Name);
+        _logger.LogInformation("  Input Greeting: {Greeting}", greeting);
+    }
 
-        // Demonstrate output binding - send messages to the collector
-        await outputCollector.AddAsync($"Function triggered at {context.Timestamp}");
-        await outputCollector.AddAsync($"Greeting: Hello, {context.Name}!");
+    /// <summary>
+    /// A function that demonstrates the HelloWorld output binding.
+    /// The output binding collects messages and logs them.
+    /// </summary>
+    [Function("SendMessage")]
+    [HelloWorldOutput(Prefix = "[HelloWorld] ")]
+    public string SendMessage(
+        [HelloWorldTrigger("Messenger")] HelloWorldContext context)
+    {
+        _logger.LogInformation("HelloWorld output binding demo!");
+        _logger.LogInformation("  Trigger Name: {Name}", context.Name);
+        
+        // Return value is sent to the output binding
+        return $"Message from {context.Name} at {context.Timestamp}";
     }
 }

@@ -1,0 +1,81 @@
+<Project>
+
+  <!-- =============================================================================
+       WebJobsReference.targets - Links Worker Extension to WebJobs Extension
+       =============================================================================
+       
+       This file is critical for the two-package architecture used in isolated worker
+       extensions. It enables the Worker extension to automatically include metadata
+       about the corresponding WebJobs extension it depends on.
+       
+       HOW IT WORKS:
+       
+       1. The Worker extension csproj includes:
+          <WebJobsReference Include="path/to/Extensions.HelloWorld.csproj" />
+       
+       2. When the Worker extension builds, the IncludeExtensionInformationAttribute
+          target runs and calls GetExtensionAssemblyAttribute on the WebJobs project.
+       
+       3. This generates an assembly attribute in the Worker extension:
+          [assembly: ExtensionInformation("Microsoft.Azure.Functions.Extensions.HelloWorld", "1.0.0")]
+       
+       4. At runtime, the Functions host reads this attribute from the Worker extension
+          and knows to load the corresponding WebJobs extension NuGet package.
+       
+       WHY THIS IS NEEDED:
+       
+       - User code only references the Worker extension (for attributes)
+       - The host needs to know which WebJobs extension (with binding logic) to load
+       - The ExtensionInformation attribute provides this mapping automatically
+       - Without this, the host wouldn't know which WebJobs package to restore/load
+       
+       USAGE:
+       
+       In your Worker extension csproj, add:
+       <ItemGroup>
+         <WebJobsReference Include="$(SrcRoot)YourExtension\YourExtension.csproj" />
+       </ItemGroup>
+       
+       This targets file is imported via Directory.Build.targets at the repo root.
+       ============================================================================= -->
+
+  <!-- 
+       GetExtensionAssemblyAttribute Target
+       
+       Called by the Worker extension build to get the ExtensionInformation attribute
+       values from the WebJobs extension project. Returns the PackageId and Version
+       that will be embedded in the Worker extension assembly.
+  -->
+  <Target Name="GetExtensionAssemblyAttribute" Returns="@(_ExtensionAssemblyAttribute)">
+    <ItemGroup>
+      <_ExtensionAssemblyAttribute Include="Microsoft.Azure.Functions.Worker.Extensions.Abstractions.ExtensionInformationAttribute">
+        <!-- PackageId: The NuGet package ID of the WebJobs extension -->
+        <_Parameter1>$(PackageId)</_Parameter1>
+        <!-- Version: The version of the WebJobs extension package -->
+        <_Parameter2>$(Version)</_Parameter2>
+      </_ExtensionAssemblyAttribute>
+    </ItemGroup>
+  </Target>
+
+  <!-- 
+       IncludeExtensionInformationAttribute Target
+       
+       Runs during the Worker extension build (before GenerateAdditionalSources).
+       Calls into the WebJobs extension project to get the attribute values,
+       then adds them as assembly attributes to the Worker extension.
+  -->
+  <Target Name="IncludeExtensionInformationAttribute" Condition="'@(WebJobsReference)' != ''"
+    BeforeTargets="GenerateAdditionalSources">
+    
+    <!-- Call GetExtensionAssemblyAttribute on each referenced WebJobs project -->
+    <MSBuild Projects="@(WebJobsReference)" Targets="GetExtensionAssemblyAttribute">
+      <Output TaskParameter="TargetOutputs" ItemName="_ExtensionAssemblyAttribute" />
+    </MSBuild>
+
+    <!-- Add the returned attributes as assembly-level attributes -->
+    <ItemGroup>
+      <AssemblyAttribute Include="@(_ExtensionAssemblyAttribute)" KeepMetadata="_Parameter1;_Parameter2" />
+    </ItemGroup>
+  </Target>
+
+</Project>
