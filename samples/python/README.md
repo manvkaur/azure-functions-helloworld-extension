@@ -4,22 +4,32 @@ This sample demonstrates how to use the HelloWorld extension from a Python Azure
 
 ## Prerequisites
 
-- [Python 3.9+](https://www.python.org/downloads/)
-- [Azure Functions Core Tools v4](https://docs.microsoft.com/azure/azure-functions/functions-run-local)
+- [Python 3.13+](https://learn.microsoft.com/azure/azure-functions/supported-languages?pivots=programming-language-python#languages-by-runtime-version)
+- Azure Functions Core Tools v4
 
 ## Setup
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
+1. **Build the extension** (from repo root):
 
-## Running
+   ```bash
+   cd samples/python
+   dotnet build extensions.csproj
+   ```
 
-```bash
-func start
-```
+2. **Create virtual environment:**
+
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # Linux/macOS
+   .venv\Scripts\activate     # Windows
+   pip install -r requirements.txt
+   ```
+
+3. **Run the function app:**
+
+   ```bash
+   func start
+   ```
 
 ## How It Works
 

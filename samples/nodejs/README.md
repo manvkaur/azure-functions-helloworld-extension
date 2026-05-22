@@ -4,21 +4,35 @@ This sample demonstrates how to use the HelloWorld extension from a Node.js (Typ
 
 ## Prerequisites
 
-- [Node.js 20+](https://nodejs.org/)
-- [Azure Functions Core Tools v4](https://docs.microsoft.com/azure/azure-functions/functions-run-local)
+- [Node.js 22+](https://learn.microsoft.com/azure/azure-functions/supported-languages?pivots=programming-language-typescript#languages-by-runtime-version)
+- Azure Functions Core Tools v4
 
 ## Setup
 
-```bash
-npm install
-npm run build
-```
+1. **Build the extension:**
 
-## Running
+   ```bash
+   cd samples/nodejs
+   dotnet build extensions.csproj
+   ```
 
-```bash
-func start
-```
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Build TypeScript:**
+
+   ```bash
+   npm run build
+   ```
+
+4. **Run the function app:**
+
+   ```bash
+   func start
+   ```
 
 ## How It Works
 
