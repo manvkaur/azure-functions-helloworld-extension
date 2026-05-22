@@ -1,18 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Microsoft.Azure.Functions.Extensions.HelloWorld</AssemblyName>
-    <RootNamespace>Microsoft.Azure.Functions.Extensions.HelloWorld</RootNamespace>
-    <PackageId>Microsoft.Azure.Functions.Extensions.HelloWorld</PackageId>
-    <Version>1.0.0</Version>
     <Description>Hello World extension for Azure Functions - A sample extension for new extension authors</Description>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.42" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.45" />
   </ItemGroup>
 
 </Project>
