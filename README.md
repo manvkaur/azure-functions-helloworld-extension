@@ -4,15 +4,19 @@ A minimal sample extension for Azure Functions that demonstrates how to create c
 
 ## Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (pinned via `global.json`)
 - [Azure Functions Core Tools v4](https://docs.microsoft.com/azure/azure-functions/functions-run-local)
 
 ## Project Structure
 
 ```text
 azure-functions-helloworld-extension/
-├── Directory.Build.props                 # Common MSBuild properties
-├── Directory.Build.targets               # Imports WebJobsReference.targets
+├── Directory.Build.props                 # Common MSBuild properties + Engineering.props import
+├── Directory.Build.targets               # Imports Engineering.targets (chains WebJobsReference)
+├── global.json                           # Pins .NET SDK version
+├── NuGet.config                          # Package source configuration
+├── .editorconfig                         # Code style enforcement
+├── NEW_EXTENSION_CHECKLIST.md            # Checklist for forking this template
 ├── src/
 │   ├── Microsoft.Azure.Functions.Extensions.HelloWorld/    # WebJobs extension (host-side)
 │   │   ├── HelloWorldStartup.cs              # Entry point - registers extension with host
@@ -40,10 +44,27 @@ azure-functions-helloworld-extension/
 │       ├── Directory.Build.targets           # Local development workaround
 │       └── ...
 ├── test/
-│   └── Microsoft.Azure.Functions.Extensions.HelloWorld.Tests/  # Unit tests (29 tests)
+│   └── Microsoft.Azure.Functions.Extensions.HelloWorld.Tests/  # Unit tests (xunit v3, 29 tests)
 ├── eng/
-│   └── build/
-│       └── WebJobsReference.targets          # Links Worker extension to WebJobs extension
+│   ├── build/                                # Centralized build infrastructure
+│   │   ├── Engineering.props                 # Lang version, signing, NuGet audit
+│   │   ├── Engineering.targets               # Imports Release + WebJobsReference targets
+│   │   ├── Version.props                     # Centralized versioning
+│   │   ├── Version.targets                   # Local vs CI version stamping
+│   │   ├── Release.props                     # NuGet package metadata + CI detection
+│   │   ├── Release.targets                   # Release notes injection
+│   │   ├── RepositoryInfo.targets            # SourceLink URL translation
+│   │   └── WebJobsReference.targets          # Links Worker extension to WebJobs extension
+│   ├── ci/                                   # Azure Pipelines
+│   │   ├── public-build.yml                  # PR/CI builds
+│   │   ├── official-build.yml                # Official CI + tag-triggered builds
+│   │   ├── code-mirror.yml                   # GitHub → AzDO mirror
+│   │   ├── official-release-host.yml         # Host extension NuGet release
+│   │   ├── official-release-worker.yml       # Worker extension NuGet release
+│   │   └── templates/                        # Shared pipeline templates
+│   └── res/                                  # Build resources
+│       ├── key.snk                           # Strong-name signing key (unique per extension)
+│       └── icon.png                          # NuGet package icon
 └── README.md
 ```
 
@@ -237,13 +258,13 @@ internal sealed class HelloWorldInputConverter : IInputConverter
 ## Building
 
 ```bash
-dotnet build
+dotnet build -c Release
 ```
 
 ## Running Tests
 
 ```bash
-dotnet test
+dotnet test -c Release
 ```
 
 ## Running the Sample
@@ -315,16 +336,23 @@ public string SendMessage(
 
 ## Creating Your Own Extension
 
+For a comprehensive checklist of everything you need to customize when forking this template, see **[NEW_EXTENSION_CHECKLIST.md](NEW_EXTENSION_CHECKLIST.md)**.
+
+Quick steps:
+
 1. **Copy this project** as a starting template
-2. **Rename** all "HelloWorld" references to your extension name
-3. **Create both packages**:
+2. **Generate a new `key.snk`** — each extension must have a unique signing key
+3. **Rename** all "HelloWorld" references to your extension name
+4. **Create both packages**:
    - WebJobs extension (host-side) with binding logic
    - Worker extension (client-side) with attributes
-4. **Modify the Listener** to implement your trigger logic (e.g., poll a service, listen to a queue)
-5. **Customize input bindings** - modify `BindToInput()` to fetch data from external sources
-6. **Customize output bindings** - modify `HelloWorldAsyncCollector` to send data to external systems
-7. **Link the packages** using `WebJobsReference` in your Worker extension csproj
-8. **Package as NuGet** and publish for others to use
+5. **Modify the Listener** to implement your trigger logic (e.g., poll a service, listen to a queue)
+6. **Customize input bindings** - modify `BindToInput()` to fetch data from external sources
+7. **Customize output bindings** - modify `HelloWorldAsyncCollector` to send data to external systems
+8. **Link the packages** using `WebJobsReference` in your Worker extension csproj
+9. **Update versioning** in `eng/build/Version.props`
+10. **Update CI pipelines** with your package names and approvers
+11. **Package as NuGet** and publish for others to use
 
 ## Design Decision Guide: When to Use Each Binding Type
 
@@ -466,12 +494,11 @@ Both packages should share the same version number. The `ExtensionInformation` a
 ### Publishing Commands
 
 ```bash
-# Pack both packages
-dotnet pack src/Microsoft.Azure.Functions.Extensions.HelloWorld -c Release
-dotnet pack src/Microsoft.Azure.Functions.Worker.Extensions.HelloWorld -c Release
+# Pack all packages (version is centralized in eng/build/Version.props)
+dotnet pack -c Release -o ./packages
 
 # Publish to NuGet
-dotnet nuget push src/*/bin/Release/*.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
+dotnet nuget push ./packages/*.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
 ```
 
 ### Testing Before Publish
