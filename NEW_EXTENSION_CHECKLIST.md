@@ -96,7 +96,7 @@ Update all references to:
 ### `eng/ci/templates/jobs/release-packages-host.yml` & `release-packages-worker.yml`
 Update:
 - Package name patterns (`**/Microsoft.Azure.Functions.Extensions.HelloWorld.*.nupkg`)
-- `approvers` to your team's security group
+- `approvers` to your team's security group (e.g., `'[TEAM FOUNDATION]\Your Team Name'`)
 - `targetFolder` path for partner drops
 
 ### Pool names (if not using shared azfunc pools)
@@ -109,7 +109,6 @@ Update:
 
 | File | What to Update |
 |------|---------------|
-| `es-metadata.yml` | `service` GUID and `path` to your team's area path |
 | `NuGet.config` | Add your team's private feed if needed |
 | `.github/ISSUE_TEMPLATE/bug_report.md` | Extension-specific environment fields |
 | `CONTRIBUTING.md` | Contribution guidelines for your extension |
