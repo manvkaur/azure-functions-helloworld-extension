@@ -16,7 +16,8 @@ azure-functions-helloworld-extension/
 ├── global.json                           # Pins .NET SDK version
 ├── NuGet.config                          # Package source configuration
 ├── .editorconfig                         # Code style enforcement
-├── NEW_EXTENSION_CHECKLIST.md            # Checklist for forking this template
+├── docs/
+│   └── new-extension-checklist.md        # Checklist for forking this template
 ├── src/
 │   ├── Microsoft.Azure.Functions.Extensions.HelloWorld/    # WebJobs extension (host-side)
 │   │   ├── HelloWorldStartup.cs              # Entry point - registers extension with host
@@ -336,7 +337,7 @@ public string SendMessage(
 
 ## Creating Your Own Extension
 
-For a comprehensive checklist of everything you need to customize when forking this template, see **[NEW_EXTENSION_CHECKLIST.md](NEW_EXTENSION_CHECKLIST.md)**.
+For a comprehensive checklist of everything you need to customize when forking this template, see **[New Extension Checklist](docs/new-extension-checklist.md)**.
 
 Quick steps:
 

@@ -55,13 +55,15 @@ Versioning is centralized in `eng/build/Version.props`:
 ```
 
 **Important:**
+
 - Do **NOT** set `<Version>` in individual `.csproj` files — it's managed centrally
 - Use `VersionPrefix` for the semantic version (e.g., `0.1.0`, `1.0.0`)
 - Use `VersionSuffix` for prerelease tags (e.g., `alpha`, `beta`, `rc.1`)
 - Set `VersionSuffix` to empty for stable releases
 - For per-project version overrides, create a `Directory.Version.props` in the project directory
 
-### Version format:
+### Version format
+
 - **Local dev:** `{VersionPrefix}-{VersionSuffix}.dev` (e.g., `0.1.0-alpha.dev`)
 - **CI (PR):** `{VersionPrefix}-{VersionSuffix}.pr.{BuildNumber}.{Counter}` (e.g., `0.1.0-alpha.pr.26272.3`)
 - **CI (main):** `{VersionPrefix}-{VersionSuffix}.ci.{BuildNumber}.{Counter}`
@@ -72,6 +74,7 @@ Versioning is centralized in `eng/build/Version.props`:
 ## 🚀 4. Configure Pipelines
 
 ### `eng/ci/templates/variables/build.yml`
+
 ```yaml
 variables:
   - name: project
@@ -79,6 +82,7 @@ variables:
 ```
 
 ### `eng/ci/official-release-host.yml` & `official-release-worker.yml`
+
 ```yaml
 resources:
   pipelines:
@@ -87,19 +91,24 @@ resources:
 ```
 
 ### `eng/ci/templates/jobs/build-artifacts.yml`
+
 Update all references to:
+
 - `out/bin/Worker.Extensions.HelloWorld/` → your worker output folder
 - `Microsoft.Azure.Functions.Worker.Extensions.HelloWorld.dll` → your worker DLL name
 - `out/bin/Extensions.HelloWorld/` → your host output folder
 - `Microsoft.Azure.Functions.Extensions.HelloWorld.dll` → your host DLL name
 
 ### `eng/ci/templates/jobs/release-packages-host.yml` & `release-packages-worker.yml`
+
 Update:
+
 - Package name patterns (`**/Microsoft.Azure.Functions.Extensions.HelloWorld.*.nupkg`)
 - `approvers` to your team's security group (e.g., `'[TEAM FOUNDATION]\Your Team Name'`)
 - `targetFolder` path for partner drops
 
 ### Pool names (if not using shared azfunc pools)
+
 - `eng/ci/public-build.yml` → `pool.name`
 - `eng/ci/official-build.yml` → `pool.name`
 
