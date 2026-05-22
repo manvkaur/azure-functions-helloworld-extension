@@ -6,6 +6,7 @@ This sample demonstrates how to use the HelloWorld extension from a Python Azure
 
 - [Python 3.13+](https://learn.microsoft.com/azure/azure-functions/supported-languages?pivots=programming-language-python#languages-by-runtime-version)
 - Azure Functions Core Tools v4
+- Azure Storage Emulator (Azurite) or Azure Storage account
 
 ## Setup
 

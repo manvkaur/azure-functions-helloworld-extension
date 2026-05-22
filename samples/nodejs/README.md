@@ -6,6 +6,7 @@ This sample demonstrates how to use the HelloWorld extension from a Node.js (Typ
 
 - [Node.js 22+](https://learn.microsoft.com/azure/azure-functions/supported-languages?pivots=programming-language-typescript#languages-by-runtime-version)
 - Azure Functions Core Tools v4
+- Azure Storage Emulator (Azurite) or Azure Storage account
 
 ## Setup
 
