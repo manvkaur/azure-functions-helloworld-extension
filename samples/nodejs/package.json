@@ -1,0 +1,17 @@
+{
+  "name": "sample-helloworld-nodejs",
+  "version": "1.0.0",
+  "description": "Azure Functions HelloWorld Extension - Node.js Sample",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

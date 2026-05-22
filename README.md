@@ -41,7 +41,9 @@ azure-functions-helloworld-extension/
 │           ├── HelloWorldContextConverter.cs # Converts trigger data
 │           └── HelloWorldInputConverter.cs   # Converts input binding data
 ├── samples/
-│   └── SampleFunctionApp/                    # Sample function using isolated worker model
+│   ├── dotnet/                                # .NET isolated worker sample
+│   ├── nodejs/                                # Node.js (TypeScript) sample
+│   └── python/                                # Python sample
 │       ├── Directory.Build.targets           # Local development workaround
 │       └── ...
 ├── test/
@@ -273,7 +275,7 @@ dotnet test -c Release
 The sample uses the isolated worker model (dotnet-isolated):
 
 ```bash
-cd samples/SampleFunctionApp
+cd samples/dotnet
 func start
 ```
 
@@ -463,7 +465,7 @@ This happens because:
 
 ### The Solution
 
-The sample includes a workaround in `samples/SampleFunctionApp/Directory.Build.targets` that:
+The sample includes a workaround in `samples/dotnet/Directory.Build.targets` that:
 
 1. Runs after `WorkerExtensions.csproj` is generated
 2. Removes the `PackageReference` to the non-existent NuGet package
