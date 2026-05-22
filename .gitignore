@@ -12,6 +12,12 @@ bld/
 [Ll]ogs/
 out/
 
+# Azurite
+__azurite_db_*.json
+__blobstorage__/
+__queuestorage__/
+AzuriteConfig/
+
 # Visual Studio
 .vs/
 *.user
