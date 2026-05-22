@@ -28,7 +28,7 @@ $rsa.Dispose()
 Replace all instances of `HelloWorld` with your extension name in these locations:
 
 | Location | What to Change |
-|----------|---------------|
+| --- | --- |
 | `src/Microsoft.Azure.Functions.Extensions.HelloWorld/` | Folder name |
 | `src/Microsoft.Azure.Functions.Worker.Extensions.HelloWorld/` | Folder name |
 | `test/Microsoft.Azure.Functions.Extensions.HelloWorld.Tests/` | Folder name |
@@ -108,7 +108,7 @@ Update:
 ## 📋 5. Other Customizations
 
 | File | What to Update |
-|------|---------------|
+| --- | --- |
 | `NuGet.config` | Add your team's private feed if needed |
 | `.github/ISSUE_TEMPLATE/bug_report.md` | Extension-specific environment fields |
 | `CONTRIBUTING.md` | Contribution guidelines for your extension |

@@ -143,7 +143,7 @@ When creating an Azure Functions extension for the isolated worker model, you ne
 The Worker SDK derives binding type names by stripping suffixes from attribute class names:
 
 | Worker Attribute Class | Generated Binding Type |
-|------------------------|------------------------|
+| --- | --- |
 | `HelloWorldTriggerAttribute` | `helloWorldTrigger` |
 | `HelloWorldInputAttribute` | `helloWorld` (strips "Input") |
 | `HelloWorldOutputAttribute` | `helloWorld` (strips "Output") |
@@ -250,7 +250,7 @@ internal sealed class HelloWorldInputConverter : IInputConverter
 ### Summary Table
 
 | Binding Type | Worker Extension | WebJobs Extension |
-|--------------|------------------|-------------------|
+| --- | --- | --- |
 | **Trigger** | `HelloWorldTriggerAttribute` : `TriggerBindingAttribute` | `HelloWorldTriggerAttribute` : `Attribute` with `[Binding]` |
 | **Input** | `HelloWorldInputAttribute` : `InputBindingAttribute` | Unified `HelloWorldAttribute` with `BindToInput()` |
 | **Output** | `HelloWorldOutputAttribute` : `OutputBindingAttribute` | Unified `HelloWorldAttribute` with `BindToCollector()` |
@@ -483,7 +483,7 @@ Once your packages are on NuGet, the standard package restore works normally.
 You need to publish two NuGet packages:
 
 | Package | Description | Dependencies |
-|---------|-------------|--------------|
+| --- | --- | --- |
 | `Microsoft.Azure.Functions.Extensions.YourExtension` | WebJobs extension (host-side) | `Microsoft.Azure.WebJobs` |
 | `Microsoft.Azure.Functions.Worker.Extensions.YourExtension` | Worker extension (client-side) | `Microsoft.Azure.Functions.Worker.Extensions.Abstractions` |
 
