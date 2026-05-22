@@ -76,11 +76,7 @@ Versioning is centralized in `eng/build/Version.props`:
 > **Note:** The release pipeline files (`official-release-host.yml`, `official-release-worker.yml`,
 > and `release-packages-*.yml`) are specific to the Azure Functions engineering system (1ES,
 > partner drops, NuGet signing). If you are **not** on the azfunc team, replace these with your
-> own release pipeline that publishes to your NuGet feed. At minimum you need:
->
-> - A pipeline that runs `dotnet pack -c Release`
-> - A publish step (`dotnet nuget push`) to your feed
-> - Appropriate approval gates for production releases
+> own release pipeline that publishes to NuGet.
 
 ### `eng/ci/templates/variables/build.yml`
 

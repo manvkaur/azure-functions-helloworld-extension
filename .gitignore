@@ -10,6 +10,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+out/
 
 # Visual Studio
 .vs/
