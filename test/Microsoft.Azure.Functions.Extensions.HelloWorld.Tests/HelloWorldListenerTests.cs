@@ -132,12 +132,12 @@ public class HelloWorldListenerTests
 
         // We can't easily test the timer (5 second delay), so we'll verify the mock setup works
         // by ensuring no exceptions during lifecycle
-        await listener.StartAsync(CancellationToken.None);
+        await listener.StartAsync(TestContext.Current.CancellationToken);
         
         // Act - wait a short time (not enough for timer, but tests startup stability)
-        await Task.Delay(100);
+        await Task.Delay(100, TestContext.Current.CancellationToken);
         
-        await listener.StopAsync(CancellationToken.None);
+        await listener.StopAsync(TestContext.Current.CancellationToken);
         listener.Dispose();
         
         // Assert - no exceptions thrown during the lifecycle
@@ -185,10 +185,10 @@ public class HelloWorldListenerTests
         // handles the scenario correctly by testing the Dispose path synchronization.
         
         // Act
-        var disposeTask = Task.Run(() => listener.Dispose());
+        var disposeTask = Task.Run(() => listener.Dispose(), TestContext.Current.CancellationToken);
         
         // Give dispose a chance to run
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
         
         // Complete the allowCompletion to unblock any waiting execution
         allowCompletion.TrySetResult(true);
