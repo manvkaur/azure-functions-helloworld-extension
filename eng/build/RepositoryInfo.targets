@@ -4,16 +4,9 @@
     The convention for names of Azure DevOps repositories mirrored from GitHub is "{GitHub org name}.{GitHub repository name}".
   -->
   <PropertyGroup>
-    <!-- There are quite a few git repo forms:
-      https://azfunc@dev.azure.com/azfunc/internal/_git/azure.azure-functions-helloworld-extension
-      https://dev.azure.com/azfunc/internal/_git/azure.azure-functions-helloworld-extension
-      https://azfunc.visualstudio.com/internal/_git/azure.azure-functions-helloworld-extension
-      azfunc@vs-ssh.visualstudio.com:v3/azfunc/internal/azure.azure-functions-helloworld-extension
-      git@ssh.dev.azure.com:v3/azfunc/internal/azure.azure-functions-helloworld-extension
-    -->
     <!-- Set DisableSourceLinkUrlTranslation to true when building a tool for internal use where sources only come from internal URIs -->
     <DisableSourceLinkUrlTranslation Condition="'$(DisableSourceLinkUrlTranslation)' == ''">false</DisableSourceLinkUrlTranslation>
-    <_TranslateUrlPattern>(https://azfunc%40dev\.azure\.com/azfunc/internal/_git|https://dev\.azure\.com/azfunc/internal/_git|https://azfunc\.visualstudio\.com/internal/_git|azfunc%40vs-ssh\.visualstudio\.com:v3/azfunc/internal|git%40ssh\.dev\.azure\.com:v3/azfunc/internal)/([^/\.]+)\.(.+)</_TranslateUrlPattern>
+    <_TranslateUrlPattern>(https://\w+%40dev\.azure\.com/\w+/\w+/_git|https://dev\.azure\.com/\w+/\w+/_git|https://\w+\.visualstudio\.com/\w+/_git|\w+%40vs-ssh\.visualstudio\.com:v3/\w+/\w+|git%40ssh\.dev\.azure\.com:v3/\w+/\w+)/([^/\.]+)\.(.+)</_TranslateUrlPattern>
     <_TranslateUrlReplacement>https://github.com/$2/$3</_TranslateUrlReplacement>
   </PropertyGroup>
 
