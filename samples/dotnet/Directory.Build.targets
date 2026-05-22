@@ -36,7 +36,7 @@
 
   <PropertyGroup>
     <!-- Path to the auto-generated WorkerExtensions.csproj -->
-    <_WorkerExtensionsPath>$(BaseIntermediateOutputPath)$(Configuration)\net8.0\WorkerExtensions\WorkerExtensions.csproj</_WorkerExtensionsPath>
+    <_WorkerExtensionsPath>$(BaseIntermediateOutputPath)$(Configuration)\WorkerExtensions\WorkerExtensions.csproj</_WorkerExtensionsPath>
     
     <!-- Path to the local WebJobs extension project -->
     <_HelloWorldProjectPath>$(SrcRoot)Microsoft.Azure.Functions.Extensions.HelloWorld\Extensions.HelloWorld.csproj</_HelloWorldProjectPath>
