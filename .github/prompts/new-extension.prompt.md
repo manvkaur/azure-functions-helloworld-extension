@@ -11,32 +11,26 @@ Ask the following questions **one at a time**, waiting for each answer before pr
 > What is the name of your extension?
 > Use concise PascalCase matching the service name (e.g., `Mcp`, `ServiceBus`, `EventGrid`, `Redis`).
 
-### Q2 — Host SDK Layer
+### Q2 — Host Package Naming
 
-Help the user choose by asking:
+**Default: Use `Microsoft.Azure.Functions.Extensions.<Name>`** — this is the recommended naming for all new extensions.
 
-> Are you modelling your extension after an existing one, or starting fresh?
+Inform the user:
+
+> Your host package will be named **`Microsoft.Azure.Functions.Extensions.<Name>`**.
 >
-> 1. **Following an existing extension** (e.g., ServiceBus, EventGrid, CosmosDB) — I'll match its SDK pattern
-> 2. **Starting fresh** — help me decide
+> **About the WebJobs SDK dependency:** All host extensions — regardless of package name — depend on `Microsoft.Azure.WebJobs` as a NuGet reference. This package provides the host extensibility interfaces (`IExtensionConfigProvider`, `ITriggerBinding`, `IListener`, `IAsyncCollector<T>`, etc.). This is the foundational layer that the Azure Functions host is built on. Your extension implements these interfaces to integrate with the host runtime.
+>
+> **The package name is just a naming convention:**
+>
+> | Convention | When to use |
+> | --- | --- |
+> | `Microsoft.Azure.Functions.Extensions.<Name>` | ✅ All **new** extensions (recommended) |
+> | `Microsoft.Azure.WebJobs.Extensions.<Name>` | ❌ Legacy naming — only used by older extensions (ServiceBus, CosmosDB, EventGrid) that can't rename without breaking consumers |
+>
+> Both patterns reference the same `Microsoft.Azure.WebJobs` SDK and implement the same interfaces. The only difference is what you name your published NuGet package.
 
-**If they chose option 1**, ask which extension they're referencing and match its namespace pattern.
-
-**If they chose option 2**, use this decision tree:
-
-| Question | If Yes → | If No → |
-| --- | --- | --- |
-| Will you use `IAsyncCollector<T>` for output bindings? | `WebJobs.Extensions` | Continue ↓ |
-| Will you implement `IListener` + `ITriggeredFunctionExecutor` for triggers? | `WebJobs.Extensions` | Continue ↓ |
-| Are you extending an existing WebJobs-based extension? | `WebJobs.Extensions` | Continue ↓ |
-| Otherwise (new service, no WebJobs dependency) | — | `Functions.Extensions` |
-
-**Summary for the user:**
-
-- **`Microsoft.Azure.WebJobs.Extensions.<Name>`** — You're using WebJobs SDK types (`IAsyncCollector`, `ITriggeredFunctionExecutor`, `IListener`, `ITriggerBinding`). This is the battle-tested path that most published extensions follow today (ServiceBus, EventGrid, CosmosDB, Storage).
-- **`Microsoft.Azure.Functions.Extensions.<Name>`** — You're building against the newer Functions host extensibility surface without pulling in WebJobs SDK types directly. Used by newer extensions like MCP. Choose this if you have no reason to depend on WebJobs SDK.
-
-> **When in doubt:** If your extension uses `IAsyncCollector`, `IListener`, or `ITriggeredFunctionExecutor` anywhere in its host-side code, choose `WebJobs.Extensions`. If it doesn't, choose `Functions.Extensions`.
+No question needed here — just inform and move on. Only ask if they explicitly say they're extending an existing `WebJobs.Extensions.*` package (in which case, match the parent's namespace for consistency).
 
 ### Q3 — Binding Types
 
@@ -54,12 +48,44 @@ Help the user choose by asking:
 > What Azure service or external system does this extension connect to?
 > (e.g., Azure Service Bus, Redis, a custom REST API, Azure AI Search)
 
-### Q5 — Configuration Settings
+### Q5 — Binding Properties
 
-> What connection or configuration settings does your extension need?
-> List them comma-separated (e.g., `ConnectionString`, `Endpoint`, `ApiKey`).
+For **each** binding type selected in Q3, ask the user to define its attribute properties. Present this as a table they fill in:
 
-### Q6 — Team Context
+> For your **[Trigger/Input/Output]** binding, list the properties that go on the attribute.
+> For each property, specify:
+>
+> | Property Name | Type | Required? | Supports `%appSetting%` resolution? | Description |
+> | --- | --- | --- | --- | --- |
+> | _example:_ `Connection` | `string` | Yes | Yes (`%%`) | Connection string name from app settings |
+> | _example:_ `QueueName` | `string` | Yes | Yes (`%%`) | Name of the queue to listen on |
+> | _example:_ `MaxBatchSize` | `int` | No | No | Max messages per batch (default: 16) |
+> | _example:_ `CreateIfNotExists` | `bool` | No | No | Auto-create resource if missing |
+
+**Guidance to share with the user:**
+
+- **Required properties** → decorated with `[AutoResolve]` (if string) and validated at startup. The binding fails if not provided.
+- **Optional properties** → have sensible defaults. Document the default value in the description.
+- **`%appSetting%` resolution** (also called `AutoResolve`) — Mark "Yes" for any string property where users should be able to reference app settings via `%SettingName%` syntax or bind to `{expressions}`. Typically used for:
+  - Connection strings / endpoints (`Connection`, `Endpoint`)
+  - Resource names that vary per environment (`QueueName`, `TopicName`, `ContainerName`)
+  - **NOT** used for: numeric values, booleans, enums, or computed properties
+- **Connection property pattern** — If the extension connects to an external service, include a `Connection` property that resolves to a named connection string in app settings. This follows the established pattern (e.g., `ServiceBusConnection`, `CosmosDBConnection`).
+
+**Ask this question once per binding type.** If the user selected "Trigger + Input + Output" in Q3, ask three times (once for trigger properties, once for input, once for output).
+
+### Q6 — App-Level Configuration
+
+> Beyond binding properties, does your extension need any host-level configuration in `host.json`?
+> These are settings that apply globally (not per-function). Examples:
+>
+> - `maxConcurrentCalls` (int, default: 16)
+> - `autoCompleteMessages` (bool, default: true)
+> - `transportType` (enum: Amqp | AmqpWebSockets)
+>
+> List them or say "none".
+
+### Q7 — Team Context
 
 > Are you on the Azure Functions engineering team (azfunc)?
 >
@@ -106,8 +132,12 @@ Remove unused binding classes and update `ExtensionConfigProvider` registration.
 
 ### 2.4 — Update Configuration
 
-- Update attribute properties to match Q5 (configuration settings)
-- Add connection resolution logic in binding providers
+- Update attribute properties to match Q5 (binding properties per binding type)
+- Apply `[AutoResolve]` to properties marked as supporting `%appSetting%` resolution
+- Mark required properties with validation logic in binding providers
+- Set default values for optional properties
+- Add connection resolution logic for `Connection`-type properties
+- Update `host.json` extension section with Q6 app-level settings (if any)
 - Update `host.json` logging namespace
 
 ### 2.5 — Set Version
@@ -121,13 +151,13 @@ In `eng/build/Version.props`:
 
 ### 2.6 — Configure Pipelines
 
-**If azfunc team (Q6 = Yes):**
+**If azfunc team (Q7 = Yes):**
 
 - Update `eng/ci/templates/variables/build.yml` with new solution name
 - Update release pipeline source names and package patterns
 - Update approvers to team security group
 
-**If not azfunc team (Q6 = No):**
+**If not azfunc team (Q7 = No):**
 
 - Replace `official-release-*.yml` and `release-packages-*.yml` with a simple NuGet publish workflow
 - Keep `public-build.yml` and `official-build.yml` as CI templates (update pool names)

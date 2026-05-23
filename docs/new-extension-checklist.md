@@ -34,10 +34,10 @@ Extensions must publish **two** NuGet packages:
 
 ### Choosing Between `WebJobs` and `Functions` Host Package Names
 
-- **`Microsoft.Azure.WebJobs.Extensions.<ExtensionName>`** — Use when the extension builds on top of the existing WebJobs SDK infrastructure (e.g., `IAsyncCollector`, `ITriggeredFunctionExecutor`). Most existing extensions use this pattern today.
-- **`Microsoft.Azure.Functions.Extensions.<ExtensionName>`** — Use for extensions that target the newer Functions-specific extensibility model without a direct WebJobs SDK dependency.
+Both naming patterns reference the same `Microsoft.Azure.WebJobs` SDK package and implement the same host interfaces (`IExtensionConfigProvider`, `ITriggerBinding`, `IListener`, `IAsyncCollector<T>`). The difference is purely the NuGet package naming convention:
 
-Both are valid host extension patterns. Choose based on which SDK layer your extension integrates with.
+- **`Microsoft.Azure.Functions.Extensions.<ExtensionName>`** — ✅ Recommended for all **new** extensions. This is the modern naming convention (e.g., MCP, HelloWorld).
+- **`Microsoft.Azure.WebJobs.Extensions.<ExtensionName>`** — Legacy naming used by older extensions (ServiceBus, CosmosDB, EventGrid) that cannot rename without breaking consumers. **Do not use for new extensions.**
 
 ### Example — MCP Extension
 
