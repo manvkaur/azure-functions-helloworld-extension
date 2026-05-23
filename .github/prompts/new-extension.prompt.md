@@ -13,10 +13,30 @@ Ask the following questions **one at a time**, waiting for each answer before pr
 
 ### Q2 — Host SDK Layer
 
-> Which host SDK layer does your extension build on?
+Help the user choose by asking:
+
+> Are you modelling your extension after an existing one, or starting fresh?
 >
-> 1. **`Microsoft.Azure.WebJobs.Extensions`** — Use when building on WebJobs SDK infrastructure (e.g., `IAsyncCollector`, `ITriggeredFunctionExecutor`). Most existing extensions use this.
-> 2. **`Microsoft.Azure.Functions.Extensions`** — Use for the newer Functions-specific extensibility model without a direct WebJobs SDK dependency.
+> 1. **Following an existing extension** (e.g., ServiceBus, EventGrid, CosmosDB) — I'll match its SDK pattern
+> 2. **Starting fresh** — help me decide
+
+**If they chose option 1**, ask which extension they're referencing and match its namespace pattern.
+
+**If they chose option 2**, use this decision tree:
+
+| Question | If Yes → | If No → |
+| --- | --- | --- |
+| Will you use `IAsyncCollector<T>` for output bindings? | `WebJobs.Extensions` | Continue ↓ |
+| Will you implement `IListener` + `ITriggeredFunctionExecutor` for triggers? | `WebJobs.Extensions` | Continue ↓ |
+| Are you extending an existing WebJobs-based extension? | `WebJobs.Extensions` | Continue ↓ |
+| Otherwise (new service, no WebJobs dependency) | — | `Functions.Extensions` |
+
+**Summary for the user:**
+
+- **`Microsoft.Azure.WebJobs.Extensions.<Name>`** — You're using WebJobs SDK types (`IAsyncCollector`, `ITriggeredFunctionExecutor`, `IListener`, `ITriggerBinding`). This is the battle-tested path that most published extensions follow today (ServiceBus, EventGrid, CosmosDB, Storage).
+- **`Microsoft.Azure.Functions.Extensions.<Name>`** — You're building against the newer Functions host extensibility surface without pulling in WebJobs SDK types directly. Used by newer extensions like MCP. Choose this if you have no reason to depend on WebJobs SDK.
+
+> **When in doubt:** If your extension uses `IAsyncCollector`, `IListener`, or `ITriggeredFunctionExecutor` anywhere in its host-side code, choose `WebJobs.Extensions`. If it doesn't, choose `Functions.Extensions`.
 
 ### Q3 — Binding Types
 
