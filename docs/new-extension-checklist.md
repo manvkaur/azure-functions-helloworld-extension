@@ -32,14 +32,14 @@ Extensions must publish **two** NuGet packages:
 | Host extension | Runs in the Functions host process; supports all language stacks via extension bundles | `Microsoft.Azure.WebJobs.Extensions.<ExtensionName>` or `Microsoft.Azure.Functions.Extensions.<ExtensionName>` |
 | Worker extension | Provides .NET isolated worker attributes and SDK integration | `Microsoft.Azure.Functions.Worker.Extensions.<ExtensionName>` |
 
-##### Choosing Between `WebJobs` and `Functions` Host Package Names
+### Choosing Between `WebJobs` and `Functions` Host Package Names
 
 - **`Microsoft.Azure.WebJobs.Extensions.<ExtensionName>`** — Use when the extension builds on top of the existing WebJobs SDK infrastructure (e.g., `IAsyncCollector`, `ITriggeredFunctionExecutor`). Most existing extensions use this pattern today.
 - **`Microsoft.Azure.Functions.Extensions.<ExtensionName>`** — Use for extensions that target the newer Functions-specific extensibility model without a direct WebJobs SDK dependency.
 
 Both are valid host extension patterns. Choose based on which SDK layer your extension integrates with.
 
-##### Example — MCP Extension
+### Example — MCP Extension
 
 | Package | NuGet |
 | --- | --- |
