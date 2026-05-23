@@ -23,7 +23,38 @@ $rsa.Dispose()
 
 ---
 
-## 📦 2. Update Package Names
+## 📦 2. NuGet Package Architecture
+
+Extensions must publish **two** NuGet packages:
+
+| Package | Purpose | Naming Pattern |
+| --- | --- | --- |
+| Host extension | Runs in the Functions host process; supports all language stacks via extension bundles | `Microsoft.Azure.WebJobs.Extensions.<ExtensionName>` or `Microsoft.Azure.Functions.Extensions.<ExtensionName>` |
+| Worker extension | Provides .NET isolated worker attributes and SDK integration | `Microsoft.Azure.Functions.Worker.Extensions.<ExtensionName>` |
+
+##### Choosing Between `WebJobs` and `Functions` Host Package Names
+
+- **`Microsoft.Azure.WebJobs.Extensions.<ExtensionName>`** — Use when the extension builds on top of the existing WebJobs SDK infrastructure (e.g., `IAsyncCollector`, `ITriggeredFunctionExecutor`). Most existing extensions use this pattern today.
+- **`Microsoft.Azure.Functions.Extensions.<ExtensionName>`** — Use for extensions that target the newer Functions-specific extensibility model without a direct WebJobs SDK dependency.
+
+Both are valid host extension patterns. Choose based on which SDK layer your extension integrates with.
+
+##### Example — MCP Extension
+
+| Package | NuGet |
+| --- | --- |
+| Host extension | [`Microsoft.Azure.Functions.Extensions.Mcp`](https://www.nuget.org/packages/Microsoft.Azure.Functions.Extensions.Mcp) |
+| Worker extension | [`Microsoft.Azure.Functions.Worker.Extensions.Mcp`](https://www.nuget.org/packages/Microsoft.Azure.Functions.Worker.Extensions.Mcp) |
+
+> **Guidelines:**
+>
+> - New extensions should publish both a host extension and a worker extension.
+> - Avoid redundant keywords in package names to maintain clarity and consistency.
+> - The `<ExtensionName>` should be concise and match the service name (e.g., `Mcp`, `ServiceBus`, `EventGrid`).
+
+---
+
+## 📦 3. Update Package Names
 
 Replace all instances of `HelloWorld` with your extension name in these locations:
 
@@ -44,7 +75,7 @@ Replace all instances of `HelloWorld` with your extension name in these location
 
 ---
 
-## 🔢 3. Set Up Versioning
+## 🔢 4. Set Up Versioning
 
 Versioning is centralized in `eng/build/Version.props`:
 
@@ -71,7 +102,7 @@ Versioning is centralized in `eng/build/Version.props`:
 
 ---
 
-## 🚀 4. Configure Pipelines
+## 🚀 5. Configure Pipelines
 
 > **Note:** The release pipeline files (`official-release-host.yml`, `official-release-worker.yml`,
 > and `release-packages-*.yml`) are specific to the Azure Functions engineering system (1ES,
@@ -119,7 +150,7 @@ Update:
 
 ---
 
-## 📋 5. Other Customizations
+## 📋 6. Other Customizations
 
 | File | What to Update |
 | --- | --- |
