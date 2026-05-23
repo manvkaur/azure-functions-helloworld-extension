@@ -16,7 +16,7 @@ out/
 __azurite_db_*.json
 __blobstorage__/
 __queuestorage__/
-AzuriteConfig/
+AzuriteConfig
 
 # Visual Studio
 .vs/
