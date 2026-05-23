@@ -1,0 +1,34 @@
+title: "New Extension Scaffolding Skill"
+description: |
+  Evaluates the new-extension prompt skill's ability to gather requirements
+  and scaffold a new Azure Functions extension from the template.
+
+skill: ../new-extension.prompt.md
+
+tasks:
+  - task: tasks/basic-extension.md
+    description: "Scaffold a basic trigger-only extension"
+  - task: tasks/full-extension.md
+    description: "Scaffold extension with trigger + input + output bindings"
+  - task: tasks/binding-properties.md
+    description: "Correctly generate attributes with AutoResolve and required properties"
+  - task: tasks/non-azfunc-team.md
+    description: "Handle non-azfunc team pipeline configuration"
+
+criteria:
+  - id: correct-naming
+    description: "Uses Microsoft.Azure.Functions.Extensions.<Name> for host package"
+  - id: correct-worker-naming
+    description: "Uses Microsoft.Azure.Functions.Worker.Extensions.<Name> for worker package"
+  - id: no-webjobs-naming
+    description: "Does NOT suggest WebJobs.Extensions namespace for new extensions"
+  - id: asks-questions-sequentially
+    description: "Asks questions one at a time, not all at once"
+  - id: binding-properties-table
+    description: "Collects binding properties with required/optional and AutoResolve info"
+  - id: generates-key
+    description: "Generates a new key.snk (not reuses template)"
+  - id: renames-all-references
+    description: "Renames HelloWorld in folders, namespaces, csproj, solution"
+  - id: validates-build
+    description: "Runs dotnet build/test/pack to verify scaffolding"
